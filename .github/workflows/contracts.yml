@@ -1,0 +1,19 @@
+name: Contracts
+on:
+  push:
+    paths: ["contracts/**"]
+  pull_request:
+    paths: ["contracts/**"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with: { toolchain: stable, targets: wasm32v1-none }
+      - uses: stellar/stellar-cli@v1
+      - run: cargo test --workspace
+      - run: stellar contract build
