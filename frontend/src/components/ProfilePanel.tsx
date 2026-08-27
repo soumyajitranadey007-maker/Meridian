@@ -1,0 +1,21 @@
+import { CheckCircle2, Copy, ExternalLink, Wallet, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { fetchReputation } from "../lib/api";
+import { useWallet } from "./WalletProvider";
+
+export function ProfilePanel({ onClose }: { onClose: () => void }) {
+  const { session, disconnect } = useWallet();
+  const [score, setScore] = useState<number | null>(null);
+  const [notice, setNotice] = useState("");
+  useEffect(() => {
+    if (!session) return;
+    let active = true;
+    fetchReputation(session.address).then((profile) => { if (active) setScore(profile.score); }).catch((cause) => { if (active && !(cause instanceof Error && "status" in cause && cause.status === 404)) setNotice(cause instanceof Error ? cause.message : "Unable to load profile."); });
+    return () => { active = false; };
+  }, [session]);
+  if (!session) return <motion.aside initial={{ opacity: 0, y: -10, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: .98 }} className="absolute right-0 top-12 z-40 w-[min(360px,calc(100vw-2rem))] rounded-2xl bg-ink p-5 ringline soft-card"><button onClick={onClose} aria-label="Close profile" className="absolute right-3 top-3 text-white/50 hover:text-cream"><X size={17} /></button><Wallet size={20} className="text-mint" /><h2 className="mt-4 text-[15px] font-bold">No wallet connected.</h2><p className="mt-2 text-[11px] leading-5 text-white/52">Connect Freighter from the dashboard to see your profile, contracts, and on-chain reputation.</p></motion.aside>;
+  const copy = async () => { await navigator.clipboard.writeText(session.address); setNotice("Wallet address copied."); };
+  return <motion.aside initial={{ opacity: 0, y: -10, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: .98 }} className="absolute right-0 top-12 z-40 w-[min(360px,calc(100vw-2rem))] rounded-2xl bg-ink p-5 ringline soft-card"><button onClick={onClose} aria-label="Close profile" className="absolute right-3 top-3 text-white/50 transition hover:text-cream"><X size={17} /></button><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-lilac to-mint text-[12px] font-extrabold text-ink">{session.address.slice(1, 3)}</span><div><p className="text-[13px] font-bold">Freighter wallet</p><p className="mt-1 text-[10px] text-mint">Stellar Testnet · connected</p></div></div><div className="mt-5 rounded-xl bg-white/[.035] p-3 ringline"><p className="text-[10px] font-bold uppercase tracking-[.12em] text-white/42">Wallet address</p><div className="mt-2 flex items-center gap-2"><p className="min-w-0 flex-1 truncate font-mono text-[11px] text-white/80">{session.address}</p><button onClick={() => void copy()} aria-label="Copy wallet address" className="rounded-lg bg-white/6 p-2 text-mint transition hover:bg-mint hover:text-ink"><Copy size={14} /></button></div></div><div className="mt-3 flex items-center justify-between rounded-xl bg-mint/8 px-3 py-3 ringline"><div><p className="text-[10px] font-bold uppercase tracking-[.12em] text-white/42">Meridian score</p><p className="mt-1 text-[16px] font-extrabold text-mint">{score === null ? "Not indexed" : score}</p></div><CheckCircle2 size={19} className="text-mint" /></div>{notice && <p className="mt-3 text-[10px] text-white/55">{notice}</p>}<div className="mt-4 grid grid-cols-2 gap-2"><Link onClick={onClose} to="/reputation" className="rounded-xl bg-white/5 px-3 py-2.5 text-center text-[11px] font-semibold text-white/85 ringline transition hover:bg-white/10">View profile</Link><a href={`https://stellar.expert/explorer/testnet/account/${session.address}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 rounded-xl bg-white/5 px-3 py-2.5 text-[11px] font-semibold text-white/85 ringline transition hover:bg-white/10">Explorer <ExternalLink size={12} /></a></div><button onClick={() => { disconnect(); onClose(); }} className="mt-3 w-full rounded-xl bg-coral/10 px-3 py-2.5 text-[11px] font-bold text-coral transition hover:bg-coral hover:text-ink">Disconnect from Meridian</button></motion.aside>;
+}
