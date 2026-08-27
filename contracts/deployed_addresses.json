@@ -1,7 +1,7 @@
 {
   "network": "testnet",
-  "factory": "",
-  "reputation": "",
-  "arbitration": "",
-  "escrow_wasm_hash": ""
+  "factory": "CAK2S7TSCPUAHOSZ5D5VQUVD4UC2D5D7GM6MLXWDPP2KAPSQNEHFHCAU",
+  "reputation": "CDVUPFBWSWXBBOSKBCKYIHZDXBV4HMPAUTCQUMPG2GAGXSWYB5YNUJQC",
+  "arbitration": "CDYWGC3SDYWQR2R6Q7OQVJIAV47EP2PNVITQGMWRHXDNJUEU6KJFKUI2",
+  "escrow_wasm_hash": "ae7f5ee558452107fe6de1d0fc82a157fece3a1cf62ea4a7f7cf5a4c257f20fd"
 }
