@@ -91,9 +91,9 @@ cd frontend && npm run test && npm run build
 
 ## Deployment
 
-Vercel reads root [`vercel.json`](vercel.json), installs the frontend package, builds `frontend/dist`, serves SPA routes from `index.html`, and sends baseline security headers. Configure all variables from [`frontend/.env.example`](frontend/.env.example) in Vercel’s project environment variables.
+Vercel reads root [`vercel.json`](vercel.json), builds the Vite application, and bundles it with the FastAPI function exported by [`app.py`](app.py). FastAPI serves `/api/*`, `/ws/*`, and `/health`; every other path is served from the compiled React SPA. Configure both the public browser values in [`frontend/.env.example`](frontend/.env.example) and the private backend values in [`backend/.env.example`](backend/.env.example) in the same Vercel project.
 
-Deploy the FastAPI service to Render or Fly.io with the backend environment variables from `backend/.env.example`. Run Alembic migrations as part of its release command. The GitHub Actions deployment workflow requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `STELLAR_DEPLOYER_IDENTITY`, and `STELLAR_TOKEN_ADDRESS` secrets.
+Set `VITE_API_URL` to the production deployment origin (for example, `https://meridian.vercel.app`) and `VITE_WS_URL` to that origin with the `wss` protocol plus `/ws/events`. Do not prefix database or Gemini values with `VITE_`. Run Alembic migrations against Neon before the first production deployment. The GitHub Actions deployment workflow requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets; contract deployment remains opt-in.
 
 ## Testnet addresses and demo
 

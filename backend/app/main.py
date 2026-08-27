@@ -1,9 +1,11 @@
 import asyncio
 from contextlib import asynccontextmanager
 import logging
+from pathlib import Path
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from .api import routes_ai, routes_contracts, routes_disputes, routes_milestones, ws
@@ -38,3 +40,17 @@ app.include_router(ws.router)
 @app.get("/health")
 async def health() -> dict:
     return {"status": "ok", "service": "meridian-api"}
+
+
+# Vercel builds the Vite application before it bundles this FastAPI function.
+# API and WebSocket routes above are registered first; this fallback therefore
+# only serves static assets and client-side application routes.
+frontend_dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+
+
+@app.get("/{path:path}", include_in_schema=False)
+async def serve_frontend(path: str) -> FileResponse:
+    requested = (frontend_dist / path).resolve()
+    if frontend_dist.exists() and requested.is_relative_to(frontend_dist) and requested.is_file():
+        return FileResponse(requested)
+    return FileResponse(frontend_dist / "index.html")
