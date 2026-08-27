@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { font-family: Inter, system-ui, sans-serif; color: #eef5f0; background: #0f3d3e; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #0f3d3e; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.ringline { box-shadow: inset 0 0 0 1px rgba(238,245,240,.09); }
+.soft-card { box-shadow: inset 0 1px 0 rgba(238,245,240,.06), 0 24px 60px -32px rgba(0,0,0,.72); }
+.grain { background-image: radial-gradient(ellipse 70% 70% at 97% -10%,rgba(79,209,197,.18),transparent 68%), radial-gradient(ellipse 45% 38% at 14% 0%,rgba(79,209,197,.07),transparent 80%), linear-gradient(180deg,rgba(10,42,43,.3),transparent 34%); }
+.tabular { font-variant-numeric: tabular-nums; }
+.metric { letter-spacing: -.055em; }
+.landing-hero { background-image: linear-gradient(90deg, rgba(6,25,24,.94) 0%, rgba(6,25,24,.79) 37%, rgba(6,25,24,.28) 100%), linear-gradient(180deg, rgba(7,28,26,.15), rgba(7,28,26,.70)), url('/meridian-hero.jpg'); background-size: cover; background-position: center; }
+.dot-pulse { animation: dot-pulse 1.8s ease-in-out infinite; }
+@keyframes dot-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(79,209,197,.35); } 50% { box-shadow: 0 0 0 5px rgba(79,209,197,0); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
