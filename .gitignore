@@ -1,0 +1,13 @@
+.superdesign/tmp/
+frontend/node_modules/
+frontend/dist/
+frontend/.tsbuildinfo.*
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/meridian.db
+backend/.env
+frontend/.env
+contracts/target/
+contracts/dist/
