@@ -1,4 +1,3 @@
-import asyncio
 from datetime import datetime, timezone
 import logging
 import httpx
@@ -8,7 +7,6 @@ from stellar_sdk import xdr
 from stellar_sdk.scval import to_native
 from ..config import get_settings
 from ..models import ContractEvent, Dispute, EscrowContract, Milestone, User
-from .websocket_manager import manager
 
 logger = logging.getLogger(__name__)
 MILESTONE_EVENT_STATUS = {
@@ -110,19 +108,6 @@ class SorobanIndexer:
                 record = ContractEvent(event_id=event_id, contract_address=contract_address, transaction_hash=transaction_hash, event_type=event_type, payload=event, ledger=event.get("ledger"), observed_at=datetime.now(timezone.utc))
                 session.add(record)
                 await self._apply_event(session, contract_address, event_type, milestone_id, event)
-                await manager.broadcast({"id": event_id, "kind": event_type, "contractAddress": contract_address, "transactionHash": transaction_hash, "payload": event})
                 stored += 1
             await session.commit()
         return stored
-
-    async def run(self) -> None:
-        self.running = True
-        while self.running:
-            try:
-                await self.poll_once()
-            except Exception as exc:
-                logger.warning("soroban_event_poll_failed", exc_info=exc)
-            await asyncio.sleep(self.settings.indexer_poll_interval_seconds)
-
-    def stop(self) -> None:
-        self.running = False

@@ -8,7 +8,7 @@ Meridian is an AI-audited milestone escrow application for freelancers and clien
 
 ```text
 Freighter + React/Vite (Vercel)
-          │ REST / WebSocket
+          │ REST / HTTP polling
           ▼
 FastAPI ─────────────► Gemini review + dispute summaries
    │
@@ -23,7 +23,7 @@ FastAPI ─────────────► Gemini review + dispute summa
 ## What is included
 
 - `contracts/`: Rust/Soroban workspace with a factory, registered escrow instances, reputation, and arbitration contracts. Cross-contract caller context is explicit and checked through the factory registry.
-- `backend/`: async FastAPI, SQLAlchemy/Alembic migrations, Gemini integration with retry/rate limiting, event-indexing service, and WebSocket broadcaster.
+- `backend/`: async FastAPI, SQLAlchemy/Alembic migrations, Gemini integration with retry/rate limiting, and a request-safe event indexer for scheduled polling.
 - `frontend/`: Vite + React + Tailwind workspace with Framer Motion, a Vercel-friendly landing hero, responsive pages, expandable/collapsible navigation, a Freighter profile panel, wallet-scoped empty states, and Vercel-served audited WASM artifacts for the protocol administrator bootstrap flow.
 - `.github/workflows/`: layer-specific CI plus an opt-in deployment workflow.
 
@@ -91,9 +91,9 @@ cd frontend && npm run test && npm run build
 
 ## Deployment
 
-Vercel reads root [`vercel.json`](vercel.json) as a two-service deployment: Vite builds and serves the frontend while FastAPI serves only `/api/*`, `/ws/*`, and `/health`. Both deploy, preview, and roll back together under the same domain. In the Vercel project’s **Build and Deployment** settings, select the **Services** framework before deploying.
+Vercel reads root [`vercel.json`](vercel.json) as a two-service deployment: Vite builds and serves the frontend while FastAPI serves only `/api/*` and `/health`. Both deploy, preview, and roll back together under the same domain. In the Vercel project’s **Build and Deployment** settings, select the **Services** framework before deploying.
 
-Configure both the public browser values in [`frontend/.env.example`](frontend/.env.example) and the private backend values in [`backend/.env.example`](backend/.env.example) in that same Vercel project. Keep `VITE_API_URL=/` and `VITE_WS_URL=/ws/events` to use the shared origin across production, preview, and custom-domain deployments. Do not prefix database or Gemini values with `VITE_`. Run Alembic migrations against Neon before the first production deployment. The GitHub Actions deployment workflow requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets; contract deployment remains opt-in.
+Configure both the public browser values in [`frontend/.env.example`](frontend/.env.example) and the private backend values in [`backend/.env.example`](backend/.env.example) in that same Vercel project. Keep `VITE_API_URL=/` to use the shared origin across production, preview, and custom-domain deployments. Meridian refreshes data over normal HTTP requests; it does not use WebSockets on Vercel. Do not prefix database or Gemini values with `VITE_`. Run Alembic migrations against Neon before the first production deployment. The GitHub Actions deployment workflow requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets; contract deployment remains opt-in.
 
 ## Testnet addresses and demo
 

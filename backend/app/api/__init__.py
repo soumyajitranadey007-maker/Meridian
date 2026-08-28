@@ -1,1 +1,1 @@
-"""HTTP and WebSocket routes."""
+"""HTTP API routes."""
