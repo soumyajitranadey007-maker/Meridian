@@ -9,8 +9,11 @@ export function useContractEvents(onEvent?: (event: ActivityEvent) => void) {
     let timer: number | undefined;
     let stopped = false;
     const connect = () => {
-      const wsUrl = import.meta.env.VITE_WS_URL;
-      if (!wsUrl) { setConnected(false); return; }
+      const configuredUrl = import.meta.env.VITE_WS_URL;
+      if (!configuredUrl) { setConnected(false); return; }
+      const wsUrl = configuredUrl.startsWith("/")
+        ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}${configuredUrl}`
+        : configuredUrl;
       try {
         socket = new WebSocket(wsUrl);
         socket.onopen = () => { attempts.current = 0; setConnected(true); };

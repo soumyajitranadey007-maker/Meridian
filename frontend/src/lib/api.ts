@@ -1,6 +1,6 @@
 import type { AIReview, ActivityEvent, Dispute, EscrowContract, Milestone, ReputationProfile } from "../types";
 
-const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
 
 export class ApiError extends Error {
   constructor(message: string, public readonly status?: number) {
@@ -13,7 +13,9 @@ function apiBaseUrl(): string {
   if (!configuredApiUrl) {
     throw new ApiError("VITE_API_URL is required. Configure the production API URL in Vercel before using Meridian.");
   }
-  return configuredApiUrl;
+  // A single Vercel Services deployment shares one origin. A slash keeps API
+  // calls on that origin and works for production, previews, and custom domains.
+  return configuredApiUrl === "/" ? "" : configuredApiUrl.replace(/\/$/, "");
 }
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
