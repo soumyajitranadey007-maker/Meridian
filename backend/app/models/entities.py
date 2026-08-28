@@ -72,3 +72,11 @@ class Evidence(IdMixin, TimestampMixin, Base):
     party_address: Mapped[str] = mapped_column(String(64))
     evidence_hash: Mapped[str | None] = mapped_column(String(64))
     body: Mapped[str] = mapped_column(Text)
+
+
+class AdminAuthChallenge(IdMixin, TimestampMixin, Base):
+    __tablename__ = "admin_auth_challenges"
+    wallet_address: Mapped[str] = mapped_column(String(64), index=True)
+    nonce: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

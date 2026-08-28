@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     factory_contract_address: str | None = None
     frontend_origins: str = "http://localhost:5173"
     indexer_poll_interval_seconds: int = 8
+    admin_wallet_addresses: str = ""
+    admin_auth_secret: str | None = None
+    admin_session_ttl_seconds: int = 900
+    cron_secret: str | None = None
     log_level: str = "INFO"
 
     @field_validator("database_url")
@@ -35,6 +39,10 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip().rstrip("/") for origin in self.frontend_origins.split(",") if origin.strip()]
+
+    @property
+    def admin_wallets(self) -> set[str]:
+        return {address.strip() for address in self.admin_wallet_addresses.split(",") if address.strip()}
 
 
 @lru_cache

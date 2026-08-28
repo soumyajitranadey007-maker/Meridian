@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from .api import routes_ai, routes_contracts, routes_disputes, routes_milestones
+from .api import routes_admin, routes_ai, routes_contracts, routes_disputes, routes_internal, routes_milestones
 from .config import get_settings
 from .db import database_is_available
 
@@ -21,6 +21,8 @@ app.include_router(routes_contracts.router)
 app.include_router(routes_milestones.router)
 app.include_router(routes_disputes.router)
 app.include_router(routes_ai.router)
+app.include_router(routes_admin.router)
+app.include_router(routes_internal.router)
 
 
 @app.get("/health", response_model=None)
