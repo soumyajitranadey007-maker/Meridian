@@ -19,6 +19,9 @@
     { "source": "/health", "destination": { "service": "backend" } },
     { "source": "/(.*)", "destination": { "service": "frontend" } }
   ],
+  "crons": [
+    { "path": "/api/internal/index-events", "schedule": "5 0 * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

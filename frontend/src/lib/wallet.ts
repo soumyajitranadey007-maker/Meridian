@@ -63,6 +63,20 @@ export async function restoreFreighterSession(): Promise<WalletSession | null> {
   return { address: address.address, network: network.network, networkPassphrase: network.networkPassphrase };
 }
 
+function signatureToBase64(signature: string | Uint8Array): string {
+  if (typeof signature === "string") return signature;
+  let binary = "";
+  for (const byte of signature) binary += String.fromCharCode(byte);
+  return window.btoa(binary);
+}
+
+export async function signAdminChallenge(session: WalletSession, message: string): Promise<string> {
+  const { signMessage } = await freighter();
+  const signed = await signMessage(message, { address: session.address, networkPassphrase: session.networkPassphrase });
+  if (signed.error || !signed.signedMessage || signed.signerAddress !== session.address) throw new WalletError(errorMessage(signed.error ?? "Freighter did not return a valid administrator signature."));
+  return signatureToBase64(signed.signedMessage);
+}
+
 async function signAndSubmit(sdk: StellarSdk, session: WalletSession, operation: ContractOperation) {
   const { rpc, BASE_FEE, TransactionBuilder } = sdk;
   const { signTransaction } = await freighter();

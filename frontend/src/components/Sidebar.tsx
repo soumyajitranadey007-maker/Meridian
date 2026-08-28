@@ -1,9 +1,9 @@
-import { Archive, ChevronLeft, ChevronRight, CircleHelp, FileText, LayoutDashboard, Plus, Scale, Settings, ShieldCheck } from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, CircleHelp, FileText, LayoutDashboard, Plus, Scale, Settings, Shield, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import { Brand } from "./Brand";
 
-const links = [["/dashboard", "Overview", LayoutDashboard], ["/contracts/new", "New contract", Plus], ["/disputes", "Disputes", Scale], ["/reputation", "Reputation", ShieldCheck], ["/settings", "Settings", Settings]] as const;
+const links = [["/dashboard", "Overview", LayoutDashboard], ["/contracts/new", "New contract", Plus], ["/disputes", "Disputes", Scale], ["/reputation", "Reputation", ShieldCheck], ["/settings", "Settings", Settings], ["/admin", "Admin", Shield]] as const;
 export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   return <motion.aside animate={{ width: collapsed ? 76 : 232 }} transition={{ duration: .2 }} className="sticky top-5 hidden h-[calc(100vh-40px)] shrink-0 flex-col rounded-2xl bg-ink/55 p-3 ringline soft-card lg:flex">
     <div className="flex items-center justify-between px-1 pb-6"><Brand compact={collapsed} /><button onClick={onToggle} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} className="grid h-8 w-8 place-items-center rounded-lg text-white/45 transition hover:bg-white/8 hover:text-cream">{collapsed ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}</button></div>

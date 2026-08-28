@@ -93,7 +93,11 @@ cd frontend && npm run test && npm run build
 
 Vercel reads root [`vercel.json`](vercel.json) as a two-service deployment: Vite builds and serves the frontend while FastAPI serves only `/api/*` and `/health`. Both deploy, preview, and roll back together under the same domain. In the Vercel project’s **Build and Deployment** settings, select the **Services** framework before deploying.
 
-Configure both the public browser values in [`frontend/.env.example`](frontend/.env.example) and the private backend values in [`backend/.env.example`](backend/.env.example) in that same Vercel project. Keep `VITE_API_URL=/` to use the shared origin across production, preview, and custom-domain deployments. Meridian refreshes data over normal HTTP requests; it does not use WebSockets on Vercel. Do not prefix database or Gemini values with `VITE_`. Run Alembic migrations against Neon before the first production deployment. The GitHub Actions deployment workflow requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets; contract deployment remains opt-in.
+Configure both the public browser values in [`frontend/.env.example`](frontend/.env.example) and the private backend values in [`backend/.env.example`](backend/.env.example) in that same Vercel project. Keep `VITE_API_URL=/` to use the shared origin across production, preview, and custom-domain deployments. Meridian refreshes data over normal HTTP requests; it does not use WebSockets on Vercel. Do not prefix database or Gemini values with `VITE_`. Run Alembic migrations against Neon before the first production deployment. Set `CRON_SECRET` so Vercel can securely call the daily Stellar event indexer; on Pro you can raise the cadence, while Hobby deployments are limited to once per day. The GitHub Actions deployment workflow requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets; contract deployment remains opt-in.
+
+### Admin operations
+
+The `/admin` page is private. Add the comma-separated Freighter public keys that may access it to `ADMIN_WALLET_ADDRESSES`, and set a random 32-character-or-longer `ADMIN_AUTH_SECRET`. An allowed wallet must sign a one-time Freighter message; Meridian verifies that signature server-side and issues only a 15-minute, tab-scoped metrics session. No wallet address by itself can read the admin API.
 
 ## Testnet addresses and demo
 

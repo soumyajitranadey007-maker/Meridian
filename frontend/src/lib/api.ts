@@ -37,6 +37,16 @@ type ApiContract = {
 };
 type ApiEvent = { id: string; event_type: string; contract_address: string; transaction_hash: string; observed_at: string };
 type ApiDispute = { id: string; contract_id: string; chain_case_id: number | null; status: string; summary: string | null; resolved_to_freelancer: boolean | null; created_at: string };
+type ApiAdminActivity = { transaction_hash: string; event_type: string; contract_address: string; wallet_address: string | null; occurred_at: string };
+type ApiAdminMetrics = { registered_wallets: number; confirmed_transactions: number; active_escrows: number; open_disputes: number; status_distribution: Array<{ status: string; count: number }>; recent_activity: ApiAdminActivity[]; generated_at: string };
+
+export type AdminSession = { accessToken: string; expiresAt: string };
+export type AdminMetrics = {
+  registeredWallets: number; confirmedTransactions: number; activeEscrows: number; openDisputes: number;
+  statusDistribution: Array<{ status: string; count: number }>;
+  recentActivity: Array<{ transactionHash: string; eventType: string; contractAddress: string; walletAddress: string | null; occurredAt: string }>;
+  generatedAt: string;
+};
 
 const titleFromDescription = (description: string, id: number) => description.split("\n")[0].slice(0, 80) || `Milestone ${id + 1}`;
 const supportedStatus = (value: string): Milestone["status"] => {
@@ -137,4 +147,27 @@ export async function submitEvidence(disputeId: string, partyAddress: string, bo
 export async function requestDisputeSummary(disputeId: string): Promise<string> {
   const response = await request<{ summary: string }>(`/api/disputes/${encodeURIComponent(disputeId)}/summary`, { method: "POST" });
   return response.summary;
+}
+
+export async function createAdminChallenge(walletAddress: string): Promise<{ challengeId: string; message: string; expiresAt: string }> {
+  const response = await request<{ challenge_id: string; message: string; expires_at: string }>("/api/admin/challenge", { method: "POST", body: JSON.stringify({ wallet_address: walletAddress }) });
+  return { challengeId: response.challenge_id, message: response.message, expiresAt: response.expires_at };
+}
+
+export async function createAdminSession(walletAddress: string, challengeId: string, signature: string): Promise<AdminSession> {
+  const response = await request<{ access_token: string; expires_at: string }>("/api/admin/session", { method: "POST", body: JSON.stringify({ wallet_address: walletAddress, challenge_id: challengeId, signature }) });
+  return { accessToken: response.access_token, expiresAt: response.expires_at };
+}
+
+export async function fetchAdminMetrics(accessToken: string): Promise<AdminMetrics> {
+  const response = await request<ApiAdminMetrics>("/api/admin/metrics", { headers: { Authorization: `Bearer ${accessToken}` } });
+  return {
+    registeredWallets: response.registered_wallets,
+    confirmedTransactions: response.confirmed_transactions,
+    activeEscrows: response.active_escrows,
+    openDisputes: response.open_disputes,
+    statusDistribution: response.status_distribution,
+    recentActivity: response.recent_activity.map((item) => ({ transactionHash: item.transaction_hash, eventType: item.event_type, contractAddress: item.contract_address, walletAddress: item.wallet_address, occurredAt: item.occurred_at })),
+    generatedAt: response.generated_at,
+  };
 }
