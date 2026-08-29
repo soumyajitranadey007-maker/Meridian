@@ -39,6 +39,22 @@ FastAPI ─────────────► Gemini review + dispute summa
 | `/reputation` | Score and on-chain history |
 | `/settings` | Wallet, network, and notification preferences |
 
+## UI screenshot 
+
+<img width="1600" height="800" alt="Screenshot 2026-08-28 210742" src="https://github.com/user-attachments/assets/36f2f041-c89c-45d0-a134-6ec967ffbf82" />
+<img width="1600" height="800" alt="Screenshot 2026-08-28 210813" src="https://github.com/user-attachments/assets/38fce68f-e838-4b57-a911-08627c296c4a" />
+<img width="1600" height="800" alt="Screenshot 2026-08-28 210841" src="https://github.com/user-attachments/assets/ad5d1c22-83df-44bd-be18-f5d7cea6c964" />
+<img width="1600" height="800" alt="Screenshot 2026-08-28 210910" src="https://github.com/user-attachments/assets/5352bc38-a117-491e-9a90-e5a57efb03de" />
+
+## Mobile responsive UI
+
+<img width="720" height="1000" alt="WhatsApp Image 2026-08-29 at 7 43 19 PM (1)" src="https://github.com/user-attachments/assets/fc0ca931-7039-4ce5-a7d0-0089fa8047be" />
+<img width="720" height="1000" alt="WhatsApp Image 2026-08-29 at 7 43 19 PM (2)" src="https://github.com/user-attachments/assets/45b5bcf2-530e-40a2-b8a9-d8fc99b0566d" />
+<img width="720" height="1000" alt="WhatsApp Image 2026-08-29 at 7 43 19 PM" src="https://github.com/user-attachments/assets/f8306e0c-7448-4878-bac6-bddd68a2df4a" />
+
+## Admin panel
+
+
 ## Local development
 
 ### Frontend
