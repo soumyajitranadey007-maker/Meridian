@@ -7,7 +7,7 @@ import pytest
 from fastapi import HTTPException, Response
 from stellar_sdk import Keypair
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.db import get_engine, get_session_factory
 from app.api.routes_admin import get_metrics
 from app.models import Base, ContractEvent, Dispute, EscrowContract, User
@@ -23,6 +23,11 @@ def test_freighter_message_signature_is_verified() -> None:
 
     with pytest.raises(HTTPException, match="could not be verified"):
         verify_freighter_signature(wallet.public_key, message, base64.b64encode(b"invalid").decode("ascii"))
+
+
+def test_neon_libpq_url_is_normalized_for_asyncpg() -> None:
+    settings = Settings(database_url="postgresql://user:password@example-pooler.neon.tech/neondb?sslmode=require&channel_binding=require")
+    assert settings.database_url == "postgresql+asyncpg://user:password@example-pooler.neon.tech/neondb?ssl=require"
 
 
 def test_admin_token_requires_an_allowed_wallet(monkeypatch: pytest.MonkeyPatch) -> None:

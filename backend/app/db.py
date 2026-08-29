@@ -1,8 +1,11 @@
 from collections.abc import AsyncIterator
+import logging
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from .config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class DatabaseConfigurationError(RuntimeError):
@@ -43,7 +46,7 @@ async def get_session() -> AsyncIterator[AsyncSession]:
         from fastapi import HTTPException
 
         raise HTTPException(status_code=503, detail="Meridian storage is not configured. Set DATABASE_URL in Vercel.") from exc
-    except SQLAlchemyError as exc:
+    except (SQLAlchemyError, OSError, TimeoutError, TypeError, ValueError) as exc:
         from fastapi import HTTPException
 
         raise HTTPException(status_code=503, detail="Meridian storage is temporarily unavailable. Check DATABASE_URL and database migrations.") from exc
@@ -55,5 +58,9 @@ async def database_is_available() -> bool:
         async with get_engine().connect() as connection:
             await connection.execute(text("SELECT 1"))
         return True
-    except (DatabaseConfigurationError, SQLAlchemyError):
+    except Exception:
+        # This path intentionally handles every connection failure. Some
+        # asyncpg DNS/TLS errors are raised as raw OSErrors rather than a
+        # SQLAlchemyError, and a health endpoint must never become a 500.
+        logger.exception("database_health_check_failed")
         return False
